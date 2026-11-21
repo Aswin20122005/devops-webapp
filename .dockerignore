@@ -1,0 +1,6 @@
+.git
+.github
+README.md
+Makefile
+tests
+docker-compose.yml
