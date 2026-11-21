@@ -103,3 +103,10 @@ code {
 a {
   color: var(--accent);
 }
+
+.build-info {
+  text-align: center;
+  color: var(--muted);
+  font-size: 0.8rem;
+  padding: 24px;
+}
