@@ -40,18 +40,42 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v4
 
-      - name: Display Message
-        run: echo "Build Successful"
+      - name: Build image
+        run: docker build -t devops-webapp:ci .
 
-      - name: List Files
-        run: ls
+      - name: Start container
+        run: docker run -d --name web -p 8080:8080 devops-webapp:ci
 
+      - name: Smoke test
+        run: tests/smoke.sh http://localhost:8080
+
+      - name: Container health
+        run: |
+          for i in $(seq 1 20); do
+            state=$(docker inspect -f '{{.State.Health.Status}}' web)
+            echo "health: $state"
+            [ "$state" = healthy ] && exit 0
+            sleep 3
+          done
+          docker logs web
+          exit 1
+
+      - name: Container logs
+        if: failure()
+        run: docker logs web
+
+  notify:
+    needs: [lint, build]
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
       - name: Send Slack Notification
         # Forks and repos without the secret would otherwise fail on an empty URL.
         if: ${{ env.SLACK_WEBHOOK != '' }}
         env:
           SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
+          RESULT: ${{ needs.build.result == 'success' && needs.lint.result == 'success' && 'success ✅' || 'failed ❌' }}
         run: |
           curl -fsS -X POST -H 'Content-type: application/json' \
-          --data '{"text":"CI Pipeline Success ✅"}' \
+          --data "{\"text\":\"CI Pipeline ${RESULT} on ${GITHUB_REF_NAME} (${GITHUB_SHA::7}): ${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}\"}" \
           "$SLACK_WEBHOOK"
