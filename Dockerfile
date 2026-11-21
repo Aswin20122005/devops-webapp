@@ -13,16 +13,15 @@ COPY index.html 404.html favicon.svg /usr/share/nginx/html/
 COPY css/ /usr/share/nginx/html/css/
 COPY js/ /usr/share/nginx/html/js/
 
-# The base image runs as the
-# unprivileged nginx user (uid 101), which can't install packages or write to the
-# web root, so switch to root for these steps and back afterwards.
+# The base image runs as the unprivileged nginx user (uid 101), which can't install
+# packages or write to the web root, so switch to root for this step and back afterwards.
+#  - apk upgrade applies Alpine security fixes released after the base image
+#    (Trivy fails the build on fixable HIGH/CRITICAL CVEs)
+#  - version.json exposes which commit is running
 USER root
-# Apply Alpine security updates on top of the base image (Trivy fails the build on
-# fixable HIGH/CRITICAL CVEs).
 # hadolint ignore=DL3017
-RUN apk upgrade --no-cache
-# Expose which commit is running at /version.json
-RUN printf '{"commit":"%s","built":"%s"}\n' "$GIT_SHA" "$BUILD_DATE" > /usr/share/nginx/html/version.json
+RUN apk upgrade --no-cache \
+ && printf '{"commit":"%s","built":"%s"}\n' "$GIT_SHA" "$BUILD_DATE" > /usr/share/nginx/html/version.json
 USER 101
 
 # Unprivileged nginx can't bind to ports below 1024.
