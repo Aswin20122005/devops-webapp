@@ -4,9 +4,28 @@ on:
   push:
     branches:
       - main
+  pull_request:
+
+permissions:
+  contents: read
+
+# Cancel an older run of the same branch when a new commit is pushed.
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Validate HTML
+        run: npx --yes html-validate@8 index.html 404.html
+
   build:
+    needs: lint
     runs-on: ubuntu-latest
 
     steps:
