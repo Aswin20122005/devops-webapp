@@ -64,6 +64,14 @@ jobs:
         if: failure()
         run: docker logs web
 
+      - name: Scan image for vulnerabilities
+        uses: aquasecurity/trivy-action@0.28.0
+        with:
+          image-ref: devops-webapp:ci
+          severity: CRITICAL,HIGH
+          ignore-unfixed: true
+          exit-code: "1"
+
   notify:
     needs: [lint, build]
     if: always()
