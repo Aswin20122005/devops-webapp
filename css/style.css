@@ -99,3 +99,7 @@ code {
   color: var(--text);
   margin: 6px 0 2px;
 }
+
+a {
+  color: var(--accent);
+}
