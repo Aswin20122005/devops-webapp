@@ -13,8 +13,12 @@ COPY index.html 404.html favicon.svg /usr/share/nginx/html/
 COPY css/ /usr/share/nginx/html/css/
 COPY js/ /usr/share/nginx/html/js/
 
-# Expose which commit is running at /version.json
+# Expose which commit is running at /version.json. The base image runs as the
+# unprivileged nginx user (uid 101), which can't write to the web root, so switch to
+# root for this one step and back afterwards.
+USER root
 RUN printf '{"commit":"%s","built":"%s"}\n' "$GIT_SHA" "$BUILD_DATE" > /usr/share/nginx/html/version.json
+USER 101
 
 # Unprivileged nginx can't bind to ports below 1024.
 EXPOSE 8080
