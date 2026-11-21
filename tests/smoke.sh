@@ -23,6 +23,7 @@ check "home page returns 200"           test "$(status /)" = 200
 check "home page has the title"         bash -c "curl -s '$BASE/' | grep -q '<title>DevOps CI/CD Demo</title>'"
 check "stylesheet returns 200"          test "$(status /css/style.css)" = 200
 check "favicon returns 200"             test "$(status /favicon.svg)" = 200
+check "/version.json has a commit"      bash -c "curl -s '$BASE/version.json' | grep -q '\"commit\"'"
 check "/healthz returns ok"             bash -c "curl -s '$BASE/healthz' | grep -qx ok"
 check "unknown page returns 404"        test "$(status /does-not-exist)" = 404
 check "404 uses the custom page"        bash -c "curl -s '$BASE/does-not-exist' | grep -q 'page not found'"
