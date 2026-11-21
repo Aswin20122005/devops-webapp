@@ -1,5 +1,5 @@
 # Static site served by nginx, running as a non-root user.
-FROM nginxinc/nginx-unprivileged:1.27-alpine
+FROM nginxinc/nginx-unprivileged:stable-alpine
 
 ARG GIT_SHA=dev
 ARG BUILD_DATE=unknown
@@ -13,10 +13,15 @@ COPY index.html 404.html favicon.svg /usr/share/nginx/html/
 COPY css/ /usr/share/nginx/html/css/
 COPY js/ /usr/share/nginx/html/js/
 
-# Expose which commit is running at /version.json. The base image runs as the
-# unprivileged nginx user (uid 101), which can't write to the web root, so switch to
-# root for this one step and back afterwards.
+# The base image runs as the
+# unprivileged nginx user (uid 101), which can't install packages or write to the
+# web root, so switch to root for these steps and back afterwards.
 USER root
+# Apply Alpine security updates on top of the base image (Trivy fails the build on
+# fixable HIGH/CRITICAL CVEs).
+# hadolint ignore=DL3017
+RUN apk upgrade --no-cache
+# Expose which commit is running at /version.json
 RUN printf '{"commit":"%s","built":"%s"}\n' "$GIT_SHA" "$BUILD_DATE" > /usr/share/nginx/html/version.json
 USER 101
 
