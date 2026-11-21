@@ -1,5 +1,5 @@
 # Static site served by nginx, running as a non-root user.
-FROM nginxinc/nginx-unprivileged:stable-alpine
+FROM nginxinc/nginx-unprivileged:mainline-alpine
 
 ARG GIT_SHA=dev
 ARG BUILD_DATE=unknown
