@@ -9,9 +9,23 @@
   </head>
   <body>
     <main>
-      <h1>DevOps Automation Successful 🚀</h1>
-      <p>This website is deployed using CI/CD pipeline.</p>
-      <h2>Version 2 Deployment</h2>
+      <header>
+        <span class="status"><span class="dot" aria-hidden="true"></span> Deployed</span>
+        <h1>DevOps Automation Successful 🚀</h1>
+        <p>This website is built, tested, packaged as a container and deployed automatically on every push to <code>main</code>.</p>
+      </header>
+
+      <section aria-labelledby="pipeline-heading">
+        <h2 id="pipeline-heading">The pipeline</h2>
+        <ol class="pipeline">
+          <li><strong>Lint</strong> HTML validation and Dockerfile linting</li>
+          <li><strong>Build</strong> Docker image (nginx, non-root)</li>
+          <li><strong>Test</strong> run the container and smoke-test every page</li>
+          <li><strong>Scan</strong> image vulnerability scan</li>
+          <li><strong>Deploy</strong> GitHub Pages and GitHub Container Registry</li>
+          <li><strong>Notify</strong> Slack message with the result</li>
+        </ol>
+      </section>
     </main>
   </body>
 </html>
