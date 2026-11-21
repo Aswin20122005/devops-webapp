@@ -24,6 +24,14 @@ jobs:
       - name: Validate HTML
         run: npx --yes html-validate@8 index.html 404.html
 
+      - name: Lint Dockerfile
+        uses: hadolint/hadolint-action@v3.1.0
+        with:
+          dockerfile: Dockerfile
+
+      - name: Lint shell scripts
+        run: shellcheck tests/*.sh
+
   build:
     needs: lint
     runs-on: ubuntu-latest
